@@ -1,0 +1,17 @@
+- name: claim persistent volume
+  k8s:
+    definition:
+      kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: postgres-pv-claim
+        namespace: '{{ meta.namespace }}'
+        labels:
+          app: approval-api
+      spec:
+        storageClassName: manual
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 1Gi

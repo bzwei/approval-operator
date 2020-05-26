@@ -1,0 +1,5 @@
+---
+- version: v1alpha1
+  group: approval.cloud.redhat.com
+  kind: Postgres
+  role: postgres

@@ -1,0 +1,19 @@
+- name: create persistent volume
+  k8s:
+    definition:
+      kind: PersistentVolume
+      apiVersion: v1
+      metadata:
+        name: postgres-pv-volume
+        namespace: '{{ meta.namespace }}'
+        labels:
+          type: local
+          app: approval-api
+      spec:
+        storageClassName: manual
+        capacity:
+          storage: 1Gi
+        accessModes:
+          - ReadWriteMany
+        hostPath:
+          path: "/mnt/data"
