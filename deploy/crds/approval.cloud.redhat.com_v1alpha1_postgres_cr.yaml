@@ -4,4 +4,4 @@ metadata:
   name: example-postgres
 spec:
   # Add fields here
-  size: 2
+  size: 0

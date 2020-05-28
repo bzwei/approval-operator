@@ -1,0 +1,69 @@
+- include_tasks: pvc.yml
+
+- include_tasks: pv.yml
+
+- name: start postgres
+  k8s:
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: '{{ meta.name }}-postgres'
+        namespace: '{{ meta.namespace }}'
+        labels:
+          app: approval-api
+      spec:
+        replicas: "{{size}}"
+        selector:
+          matchLabels:
+            name: approval-postgresql
+        template:
+          metadata:
+            labels:
+              app: approval-api
+              name: approval-postgresql
+          spec:
+            volumes:
+            - name: approval-postgresql
+              persistentVolumeClaim:
+                claimName: postgres-pv-claim
+            containers:
+            - name: approval-postgresql
+              image: postgres:10.4
+              ports:
+              - containerPort: 5432
+              volumeMounts:
+              - name: approval-postgresql
+                mountPath: "/var/lib/pgsql/data"
+              env:
+              - name: POSTGRESQL_USER
+                value: pguser
+              - name: POSTGRESQL_PASSWORD
+                value: pgpasswor1$
+              - name: POSTGRESQL_DATABASE
+                value: approval_production
+              resources:
+                limits:
+                  cpu: 200m
+                  memory: 500Mi
+                requests:
+                  cpu: 100m
+                  memory: 200Mi
+
+- name: postgres service
+  k8s:
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: approval-postgresql
+        namespace: '{{ meta.namespace }}'
+        labels:
+          app: approval-api
+      spec:
+        ports:
+        - name: approval-postgresql
+          port: 5432
+          targetPort: 5432
+        selector:
+          name: approval-postgresql

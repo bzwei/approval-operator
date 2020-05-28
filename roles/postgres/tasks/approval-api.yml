@@ -1,0 +1,44 @@
+- name: start approval-api
+  k8s:
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: '{{ meta.name }}-approval-api'
+        namespace: '{{ meta.namespace }}'
+        labels:
+          app: approval-api
+      spec:
+        replicas: "{{size}}"
+        selector:
+          matchLabels:
+            name: approval-api
+        template:
+          metadata:
+            labels:
+              app: approval-api
+              name: approval-api
+          spec:
+            containers:
+            - name: approval-api
+              image: approval-api:test1.0
+              ports:
+              - containerPort: 3000
+              env:
+              - name: APP_NAME
+                value: approval
+              - name: DATABASE_HOST
+                value: approval-postgresql
+              - name: DATABASE_PASSWORD
+                value: "pgpasswor1$"
+              - name: DATABASE_PORT
+                value: "5432"
+              - name: DATABASE_USER
+                value: pguser
+              - name: PATH_PREFIX
+                value: api
+              - name: BYPASS_RBAC
+                value: "true"
+              - name: RAILS_LOG_LEVEL
+                value: info
+
